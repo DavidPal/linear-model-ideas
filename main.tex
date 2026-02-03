@@ -69,10 +69,10 @@ The objective function and the constraint are both convex in the optimization
 variables $a,b,C$. To make it obvious that objective is convex in $a,b,C$, we
 can write it as
 $$
-\sum_{i=1}^n \left(y_i - a - b^T x_i - \ip{xx^T}{C}_F \right)^2
+\sum_{i=1}^n \left(y_i - a - b^T x_i - \ip{x_t x_t^T}{C}_F \right)^2
 $$
 where $\ip{x_i x_i^T}{C}_F$ is the Frobenius inner product between the matrix
-$x_i x_i^T$ and the matrix $C$. To see that note that
+$x_t x_t^T$ and the matrix $C$. To see that note that
 $$
 x_t^T C x_t = \sum_{i=1}^d \sum_{j=1}^d x_{t,i} x_{t,j} C_{i,j} = \ip{x_t x_t^T}{C}_F \: .
 $$
@@ -107,10 +107,48 @@ $$
 \minimize_{a,b,c,D} \qquad \sum_{t=1}^T \left(y_t - a - b^T x_t - c^T z_t - \ip{z_t x_t^T}{D}_F \right)^2 \: .
 $$
 Note that this problem is equivalent to the standard linear least squares
-problem where the feature vector for $t$-th sample is the concetanation of the
+problem where the feature vector for $t$-th sample is the concatenation of the
 vectors $x_t$, $z_t$ and the (vectorized) matrix $z_t x_t^T$.
 
-\section{Confidence bounds}
+\section{Ellipsoids}
+
+Let $x_1, x_2, \dots, x_T$ be fixed vectors in $\R^d$. We assume that the
+vectors span $\R^d$. Let
+$$
+y_t = \theta^T x_t + \epsilon_t \qquad \text{for all $t=1,2,\dots,T$}.
+$$
+where $\epsilon_1, \epsilon_2, \dots, \epsilon_T$ are i.i.d. noise variables
+generated from $N(0,\sigma^2)$.
+
+Let $X$ be the $T \times d$ matrix with rows $x_1, x_2, \dots, x_T$. Let $Y =
+(y_1, y_2, \dots, y_T) \in \R^T$. Let
+$$
+\widehat{\theta} = (X^TX)^{-1}X^T Y
+$$
+be the unregularized least squares estimate of $\theta$.
+
+It can be shown that with high probability the parameter $\theta$ lies in the set
+$$
+C_r = \{ \theta \in \R^d ~:~ (\theta - \widehat{\theta})^T X^T X (\theta - \widehat{\theta})^T \le r \} \: .
+$$
+The set $C_r$ is an ellipsoid with the center at $\widehat{\theta}$. The shape
+of the ellipsoid is specified by the covariance matrix $X^T X$. The scale
+parameter $r$ depends on the confidence level and variance of the noise
+$\sigma^2$.
+
+More importantly, it is possible to find a set $D_{\alpha, \delta} \subseteq
+\R^d$ such that for any $x \in D_{\alpha,\delta}$ with probability at least $1 -
+\delta$,
+$$
+|(\widehat{\theta} - \theta)^T x| \le \alpha \: .
+$$
+The set is
+$$
+D_{\alpha,\delta} = \{ x \in \R^d ~:~ 8 \sigma^2 x^T (X^TX)^{-1} x \ln(1/\delta) \le \alpha^2 \} \: .
+$$
+Note that $D_{\alpha,\delta}$ is an ellipsoid centered at the origin. The shape
+of the ellipsoid is specified by the inverse covariance matrix $(X^T X)^{-1}$.
+The scale of the ellipsoid depends on the parameters $\alpha$ and $\delta$.
 
 \nocite{*}
 \bibliography{bibliography}
