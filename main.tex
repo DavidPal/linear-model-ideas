@@ -45,7 +45,7 @@ Suppose we have observations $(x_1, y_1), (x_2, y_2), \dots, (x_T, y_T)$.  We
 assume that $x_t \in \R^d$ and $y_t \in \R$ for all $t=1,2,\dots,T$. We would
 like to fit a function $f:\R^d \to \R$ such that
 $$
-y_t \approx f(x_t) \text{for all $t=1,2,\dots,T$}.
+y_t \approx f(x_t) \qquad \text{for all $t=1,2,\dots,T$}.
 $$
 Of course, this can be done with many different methods, ranging from linear
 regression, and decision trees to neural networks.
@@ -77,7 +77,38 @@ $$
 x_t^T C x_t = \sum_{i=1}^d \sum_{j=1}^d x_{t,i} x_{t,j} C_{i,j} = \ip{x_t x_t^T}{C}_F \: .
 $$
 
+With this view in mind, note that the optimization problem is the linear least
+squares problem with an additional constraint on the parameters.
+
 \section{Heterogenous treatment effect}
+
+Suppose we have observations $(x_1, y_1, z_1), (x_2, y_2, z_2), \dots, (x_T, y_T, z_T)$.  We
+assume that $x_t \in \R^d$, $y_t \in \R$, and $z_t \in \R^k$ for all $t=1,2,\dots,T$. We would
+like to fit a function $f:\R^d \times \R^k \to \R$ such that
+$$
+y_t \approx f(x_t, z_t) \qquad \text{for all $t=1,2,\dots,T$}.
+$$
+We would like the function $f(x,z)$ to be linear in parameter $x$. A simple function that satisfies
+has the form
+$$
+f(x,z) = a + b^Tx + c^Tz + z^T D x \: .
+$$
+where $a \in \R$, $b \in \R^d$, $c \in \R^k$, $D \in \R^{k \times d}$ is a matrix. The function can be
+equivalently written as
+$$
+f(x,z) = a + b^Tx + c^Tz + \ip{z x^T}{D}_F \: .
+$$
+where $\ip{z x^T}{D}_F$ is the Frobenius inner product between two $k \times d$ matrices, $z x^T$
+and $D$.
+
+With this view in mind, we can find the parameters $a,b,c,D$ by solving the unconstrained
+linear least squares optimization problem
+$$
+\minimize_{a,b,c,D} \qquad \sum_{t=1}^T \left(y_t - a - b^T x_t - c^T z_t - \ip{z_t x_t^T}{D}_F \right)^2 \: .
+$$
+Note that this problem is equivalent to the standard linear least squares
+problem where the feature vector for $t$-th sample is the concetanation of the
+vectors $x_t$, $z_t$ and the (vectorized) matrix $z_t x_t^T$.
 
 \section{Confidence bounds}
 
