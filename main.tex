@@ -1,0 +1,88 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage[numbers]{natbib}
+
+\DeclareMathOperator*{\maximize}{maximize}
+\DeclareMathOperator*{\minimize}{minimize}
+\DeclareMathOperator*{\subjectto}{subject\ to}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}[lemma]{Theorem}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+
+\newcommand{\I}{\mathcal{I}}
+\newcommand{\J}{\mathcal{J}}
+\newcommand{\K}{\mathcal{K}}
+\renewcommand{\P}{\mathcal{P}}
+\newcommand{\Q}{\mathcal{Q}}
+
+\newcommand{\ip}[2]{\left\langle #1, #2 \right\rangle} % inner product or bilinear map
+
+\begin{document}
+
+\title{Linear model ideas}
+\author{David P\'al}
+\date{February 3, 2026}
+\maketitle
+
+\begin{abstract}
+This document is a series of ideas for improving linear models.
+\end{abstract}
+
+\section{Convex shape constraints}
+
+Suppose we have observations $(x_1, y_1), (x_2, y_2), \dots, (x_T, y_T)$.  We
+assume that $x_t \in \R^d$ and $y_t \in \R$ for all $t=1,2,\dots,T$. We would
+like to fit a function $f:\R^d \to \R$ such that
+$$
+y_t \approx f(x_t) \text{for all $t=1,2,\dots,T$}.
+$$
+Of course, this can be done with many different methods, ranging from linear
+regression, and decision trees to neural networks.
+
+Suppose that $f:\R^d \to \R$ has to be a convex function. Of course, a linear
+or an affine functions is convex, and it can be found by doing least squares
+linear regression. A more general function is of the form
+$$
+f(x) = a + b^T x + x^T C x
+$$
+where $a \in \R$, $b \in \R^d$ and $C \in \R^{d \times d}$ is a symmetric
+positive semi-definite matrix. The parameters $a,b,C$ can be found by solving
+a convex optimization program
+
+\begin{align*}
+\minimize_{a,b,C} & \qquad \sum_{t=1}^T \left(y_t - a - b^T x_t - x_t^T C x_t \right)^2 \\
+\subjectto & \qquad C \succeq 0
+\end{align*}
+
+The objective function and the constraint are both convex in the optimization
+variables $a,b,C$. To make it obvious that objective is convex in $a,b,C$, we
+can write it as
+$$
+\sum_{i=1}^n \left(y_i - a - b^T x_i - \ip{xx^T}{C}_F \right)^2
+$$
+where $\ip{x_i x_i^T}{C}_F$ is the Frobenius inner product between the matrix
+$x_i x_i^T$ and the matrix $C$. To see that note that
+$$
+x_t^T C x_t = \sum_{i=1}^d \sum_{j=1}^d x_{t,i} x_{t,j} C_{i,j} = \ip{x_t x_t^T}{C}_F \: .
+$$
+
+\section{Heterogenous treatment effect}
+
+\section{Confidence bounds}
+
+\nocite{*}
+\bibliography{bibliography}
+\bibliographystyle{chicago}
+
+\end{document}
