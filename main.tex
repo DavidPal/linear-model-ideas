@@ -36,7 +36,7 @@
 \maketitle
 
 \begin{abstract}
-This document is a series of ideas for improving linear models.
+This document contains a few ideas about linear models.
 \end{abstract}
 
 \section{Convex shape constraints}
@@ -50,9 +50,10 @@ $$
 Of course, this can be done with many different methods, ranging from linear
 regression, and decision trees to neural networks.
 
-Suppose that $f:\R^d \to \R$ has to be a convex function. Of course, a linear
-or an affine functions is convex, and it can be found by doing least squares
-linear regression. A more general function is of the form
+Suppose that we would like to guarantee that $f:\R^d \to \R$ is a convex
+function. Of course, a linear or an affine functions is convex, and it can be
+found by doing least squares linear regression. A more general function is of
+the form
 $$
 f(x) = a + b^T x + x^T C x
 $$
@@ -69,7 +70,7 @@ The objective function and the constraint are both convex in the optimization
 variables $a,b,C$. To make it obvious that objective is convex in $a,b,C$, we
 can write it as
 $$
-\sum_{i=1}^n \left(y_i - a - b^T x_i - \ip{x_t x_t^T}{C}_F \right)^2
+\sum_{t=1}^T \left(y_t - a - b^T x_t - \ip{x_t x_t^T}{C}_F \right)^2
 $$
 where $\ip{x_i x_i^T}{C}_F$ is the Frobenius inner product between the matrix
 $x_t x_t^T$ and the matrix $C$. To see that note that
@@ -88,8 +89,9 @@ like to fit a function $f:\R^d \times \R^k \to \R$ such that
 $$
 y_t \approx f(x_t, z_t) \qquad \text{for all $t=1,2,\dots,T$}.
 $$
-We would like the function $f(x,z)$ to be linear in parameter $x$. A simple function that satisfies
-has the form
+We would like the function $f(x,z)$ to be linear in parameter $x$. We don't
+particularly care about how $f(x,z)$ dependens on $z$. A simple function that
+satisfies this requirement has the form
 $$
 f(x,z) = a + b^Tx + c^Tz + z^T D x \: .
 $$
@@ -140,19 +142,24 @@ of the ellipsoid is specified by the covariance matrix $X^T X$. The scale
 parameter $r$ depends on the confidence level and variance of the noise
 $\sigma^2$.
 
-\subsection{Where is the model confident?}
+\subsection{Where is the model accurate?}
 
-It is possible to find a subset of the feature space we are confident that
-the least squares model provides an accurate prediction. That is, a set
-of feature vectors $x \in \R^d$ such that
+We say that the least squares model $\widehat{\theta}$ is \emph{accurate} on
+an action $x \in \R^d$ if
 $$
 |(\widehat{\theta} - \theta)^T x| \le \alpha .
 $$
-Formally, let
+In other words, the least squares model is accurate on $x$ if the prediction
+$\widehat{\theta}^T x$ is close to true value $\theta^T x$.
+
+We are interested in constructing a set of actions $x \in \R^d$ on which
+$\widehat{\theta}$ is guaranteed to be accurate. For any $\alpha > 0$ andy
+$\delta \in (0,1)$, we define the set $D_{\alpha,\delta}$ as
 $$
 D_{\alpha,\delta} = \{ x \in \R^d ~:~ 8 \sigma^2 x^T (X^TX)^{-1} x \ln(1/\delta) \le \alpha^2 \} \: .
 $$
-Then, for any $\alpha > 0$ and $\delta \in (0,1)$, with probability at least $1 - \delta$,
+It can be proven that for any $x \in D_{\alpha,\delta}$, with probability at
+least $1 - \delta$,
 $$
 |(\widehat{\theta} - \theta)^T x| \le \alpha \: .
 $$
